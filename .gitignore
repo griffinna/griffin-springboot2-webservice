@@ -2,3 +2,5 @@
 
 .gradle
 .idea
+application-oauth.properties
+# gitignore작동하지않을때 (https://jojoldu.tistory.com/307)
