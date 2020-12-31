@@ -1,6 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
+# gitignore작동하지않을때 (https://jojoldu.tistory.com/307)
 
 .gradle
 .idea
 application-oauth.properties
-# gitignore작동하지않을때 (https://jojoldu.tistory.com/307)
+build/
