@@ -1,6 +1,7 @@
 package com.griffin.springboot.web;
 
 import com.griffin.springboot.config.auth.dto.SessionUser;
+import com.griffin.springboot.domain.user.LoginUser;
 import com.griffin.springboot.service.posts.PostsService;
 import com.griffin.springboot.web.dto.PostsResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -19,10 +20,10 @@ public class IndexController {
     private final HttpSession httpSession;
 
     @GetMapping("/")
-    public String index(Model model) {      // model : 서버 템플릿 엔진에서 사용할 수 있는 객체를 저장 가능
+    public String index(Model model, @LoginUser SessionUser user) {      // model : 서버 템플릿 엔진에서 사용할 수 있는 객체를 저장 가능
         model.addAttribute("posts", postsService.findAllDesc());
         // 로그인
-        SessionUser user = (SessionUser) httpSession.getAttribute("user");
+//        SessionUser user = (SessionUser) httpSession.getAttribute("user");    @LoginUser 로 리팩토링
         if (user != null) {
             model.addAttribute("userName", user.getName());
         }
