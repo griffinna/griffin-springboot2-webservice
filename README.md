@@ -60,3 +60,45 @@ chmod 700 ~/.ssh/config
 ```
 ssh {config에 등록한 서비스명}
 ```
+
+### Linux 설정하기
+##### 1. Java 8 설치
+```
+sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+```
+> 인스턴스의 Java 버전을 8로 변경
+```
+sudo /usr/sbin/alternatives --config java
+```
+> 불필요한 java 가 있는 경우 삭제
+```
+sudo yum remove java-1.7.0-openjdk
+```
+> java 버전 확인
+```
+java -version
+```
+##### 2. 타임존변경
+```
+sudo rm /etc/localtime
+sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+
+date
+```
+##### 3. 호스트네임 변경
+> 각 서버가 어느 서비스인지 표현하기 위해 HOSTNAME 을 변경
+```
+sudo vim /etc/sysconfig/network
+```
+> HOSTNAME 으로 되어있는 부분을 원하는 서비스명으로 변경
+```
+HOSTNAME=griffin-springboot2-webservice
+```
+> /etc/hosts 에 변경한 hostname 등록
+```
+sudo vim /etc/hosts
+
+127.0.0.1  등록한HOSTNAME
+
+curl 등록한 호스트 이름
+```
