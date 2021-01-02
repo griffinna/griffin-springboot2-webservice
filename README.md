@@ -27,25 +27,25 @@ EC2 인스턴스를 시작하는 데 필요한 정보를 이미지로 만들어 
 - EIP (Elasic IP, AWS의 고정IP) 할당후 인스턴스와 연결
 
 ### EC2 서버 접속
-```
+``` shell
 ssh -i {pem 키 위치} {EC2의 탄력적 IP주소}
 ```
 - 손쉽게 접속할 수 있도록 설정하기
 > ~/.ssh 로 pem 파일 이동 > ssh 실행시 자동으로 읽어 접속
-```
+``` shell
 cp pem {pem 키 위치} ~/.ssh/
 ll ~/.ssh/
 ```
 > pem 키 권한 변경
-```
+``` shell
 chmod 600 ~/.ssh/pem키이름
 ``` 
 > pem 키가 있는 ~/.ssh 디렉토리에 config 파일 생성
-```
+``` shell
 vim ~/.ssh/config
 ```
 
-```
+``` shell
 # griffin-springboot2-webservice
 Host 원하는서비스명
     HostName ec2의 탄력적IP주소
@@ -53,32 +53,32 @@ Host 원하는서비스명
     IdentityFile ~/.ssh/pem키 이름
 ```
 > config 파일 실행권한 설정
-```
+``` shell
 chmod 700 ~/.ssh/config
 ```
 > ec2 접속하기
-```
+``` shell
 ssh {config에 등록한 서비스명}
 ```
 
 #### 1. Java 8 설치
-```
+``` shell
 sudo yum install -y java-1.8.0-openjdk-devel.x86_64
 ```
 > 인스턴스의 Java 버전을 8로 변경
-```
+``` shell
 sudo /usr/sbin/alternatives --config java
 ```
 > 불필요한 java 가 있는 경우 삭제
-```
+``` shell
 sudo yum remove java-1.7.0-openjdk
 ```
 > java 버전 확인
-```
+``` shell
 java -version
 ```
 #### 2. 타임존변경
-```
+``` shell
 sudo rm /etc/localtime
 sudo ln -s /usr/share/zoneinfo/Asia/Seoul /etc/localtime
 
@@ -86,15 +86,15 @@ date
 ```
 #### 3. 호스트네임 변경
 > 각 서버가 어느 서비스인지 표현하기 위해 HOSTNAME 을 변경
-```
+``` shell
 sudo vim /etc/sysconfig/network
 ```
 > HOSTNAME 으로 되어있는 부분을 원하는 서비스명으로 변경
-```
+``` shell
 HOSTNAME=griffin-springboot2-webservice
 ```
 > /etc/hosts 에 변경한 hostname 등록
-```
+``` shell
 sudo vim /etc/hosts
 
 127.0.0.1  등록한HOSTNAME
@@ -129,7 +129,7 @@ curl 등록한 호스트 이름
 > MYSQL/Aurora | TCP | 3306 | 사용자지정 | {EC2 보안그룹ID}   
 > MYSQL/Aurora | TCP | 3306 | 내 IP | {내 IP}
 > 3. Database 플러그인 설치 (RDS정보 페이지에서 엔드포인트 확인)
-```
+``` shell
 use griffin_springboot_webserivce;
 
 show variables like 'c%';
@@ -154,7 +154,7 @@ select * from TEST;
 
 #### 4. EC2 에서 RDS 접근 확인
 > EC2 에 MySQL CLI 설치
-```
+``` shell
 ssh griffin-springboot2-webservice
 
 sudo yum install mysql
@@ -177,7 +177,7 @@ mysql> show databases;
 
 ### EC2 서버에 프로젝트 배포
 #### 1. EC2 에 프로젝트 clone
-```
+``` shell
 # git 설치
 sudo yum install git
 git --version
@@ -191,24 +191,24 @@ git clone 프로젝트주소
 ```
 
 - 테스트수행
-```
+``` shell
 ./gradlew test
 ```
 > 성공
-```
+``` shell
 BUILD SUCCESSFUL in 2m 26s
 5 actionable tasks: 5 executed
 ```
 
 > 실패 : -bash: ./gradlew: Permission denied
-```
+``` shell
 # 실행 권한을 추가한 뒤 다시 테스트 진행
 chmod +x ./gradlew
 ```
 
 #### 2. 배포 스크립트 만들기
 > ~/app/step1/deploy.sh
-```
+``` shell
 REPOSITORY=/home/ec2-user/app/step1
 PROJECT_NAME=griffin-springbbot2-webservice
 
@@ -234,7 +234,7 @@ if [ -z "$CURRENT_PID" ]; then
 	echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
 else
 	echo "> kill -15 $CURRENT_PID"
-	kill -15 $CURRNET_PID
+	kill -15 $CURRENT_PID
 	sleep 5
 fi
 
@@ -247,7 +247,7 @@ nohup java -jar $REPOSITORY/$JAR_NAME 2>&1 &
 # nohup : 애플리케이션 실행자가 터미널을 종료해도 애플리케이션은 계속 구동
 ```
 > deploy.sh 실행권한 추가 및 실행
-```
+``` shell
 chmod +x ./deploy.sh
 
 ./deploy.sh
@@ -273,10 +273,70 @@ BUILD SUCCESSFUL in 4s
 
 > 외부 Security 파일 등록하기
 > - ClientId 와 ClientSecret 설정을 서버에 직접 가지고 있도록 설정
-```
+``` shell
 vim /home/ec2-user/app/application-oauth.properties
 
 # deploy 수정
 nohup java -jar \-Dspring.config.location=classpath:/application.properties,/home/ec2-user/app/application-oauth.properties \/$REPOSITORY/$JAR_NAME 2>&1 &
 
+```
+
+#### 3. 스프링부트 프로젝트로 RDS 접근하기
+1. 테이블 생성
+``` sql
+# 애플리케이션 테이블
+Hibernate: create table posts (id bigint not null auto_increment, created_date datetime, modified_date datetime, author varchar(255), content TEXT not null, title varchar(500) not null, primary key (id)) engine=InnoDB
+Hibernate: create table user (id bigint not null auto_increment, created_date datetime, modified_date datetime, email varchar(255) not null, name varchar(255) not null, picture varchar(255), role varchar(255) not null, primary key (id)) engine=InnoDB
+
+# 스프링 세션 테이블 (schema-mysql.sql)
+CREATE TABLE SPRING_SESSION (
+                                PRIMARY_ID CHAR(36) NOT NULL,
+                                SESSION_ID CHAR(36) NOT NULL,
+                                CREATION_TIME BIGINT NOT NULL,
+                                LAST_ACCESS_TIME BIGINT NOT NULL,
+                                MAX_INACTIVE_INTERVAL INT NOT NULL,
+                                EXPIRY_TIME BIGINT NOT NULL,
+                                PRINCIPAL_NAME VARCHAR(100),
+                                CONSTRAINT SPRING_SESSION_PK PRIMARY KEY (PRIMARY_ID)
+) ENGINE=InnoDB ROW_FORMAT=DYNAMIC;
+
+CREATE UNIQUE INDEX SPRING_SESSION_IX1 ON SPRING_SESSION (SESSION_ID);
+CREATE INDEX SPRING_SESSION_IX2 ON SPRING_SESSION (EXPIRY_TIME);
+CREATE INDEX SPRING_SESSION_IX3 ON SPRING_SESSION (PRINCIPAL_NAME);
+
+CREATE TABLE SPRING_SESSION_ATTRIBUTES (
+                                           SESSION_PRIMARY_ID CHAR(36) NOT NULL,
+                                           ATTRIBUTE_NAME VARCHAR(200) NOT NULL,
+                                           ATTRIBUTE_BYTES BLOB NOT NULL,
+                                           CONSTRAINT SPRING_SESSION_ATTRIBUTES_PK PRIMARY KEY (SESSION_PRIMARY_ID, ATTRIBUTE_NAME),
+                                           CONSTRAINT SPRING_SESSION_ATTRIBUTES_FK FOREIGN KEY (SESSION_PRIMARY_ID) REFERENCES SPRING_SESSION(PRIMARY_ID) ON DELETE CASCADE
+) ENGINE=InnoDB ROW_FORMAT=DYNAMIC;
+
+```
+2. 프로젝트 설정
+>  build.gradle 에 MariaDB 드라이버 등록
+``` properties
+compile('org.mariadb.jdbc:mariadb-java-client')
+```
+> application-real.properties 추가
+``` properties
+spring.profiles.include=oauth.real-db
+spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
+spring.session.store-type=jdbc
+```
+3. EC2 설정
+> app 디렉토리에 application-real-db.properties 생성
+``` shell
+vim ~/app/application-real-db.properties
+
+# JPA 로 테이블이 자동생성되는 옵션을 none 설정 (RDS는 실제 운영 테이블이기 때문에 스프링부트에서 새로 만들면 안됨)
+spring.jpa.hibernate.ddl-auto=none
+spring.datasource.url=jdbc:mariadb://{rds주소}:{port}/{database명}
+spring.datasource.username=db계정
+spring.datasource.password=db계정 비밀번호
+spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+```
+> deploy.sh 수정 (real profile 사용)
+``` properties
+nohup java -jar \-Dspring.config.location=classpath:/application.properties,/home/ec2-user/app/application-oauth.properties,/home/ec2-user/app/application-real-db.properties,classpath:/application-real.properties \-Dspring.profiles.active=real \/$REPOSITORY/$JAR_NAME 2>&1 &
 ```
