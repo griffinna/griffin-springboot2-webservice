@@ -205,3 +205,78 @@ BUILD SUCCESSFUL in 2m 26s
 # 실행 권한을 추가한 뒤 다시 테스트 진행
 chmod +x ./gradlew
 ```
+
+#### 2. 배포 스크립트 만들기
+> ~/app/step1/deploy.sh
+```
+REPOSITORY=/home/ec2-user/app/step1
+PROJECT_NAME=griffin-springbbot2-webservice
+
+cd /$REPOSITORY/$PROJECT_NAME/
+
+echo "> Git Pull"
+git pull
+
+echo "> 프로젝트 Build 시작"
+./gradlew build
+
+echo "> step1 디렉토리 이동"
+cd $REPOSITORY
+
+echo "> Build 파일 복사"
+cp $REPOSITORY/$PROJECT_NAME/build/libs/*.jar $REPOSITORY/
+
+echo "> 현재 구동중인 애플리케이션 pid 확인"
+CURRENT_PID=$(pgrep -f ${PROJECT_NAME}.*.jar)
+
+echo "> 현재 구동중인 애플리케이션 pid : $CURRENT_PID"
+if [ -z "$CURRENT_PID" ]; then
+	echo "> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다."
+else
+	echo "> kill -15 $CURRENT_PID"
+	kill -15 $CURRNET_PID
+	sleep 5
+fi
+
+echo "> 새 애플리케이션 배포"
+JAR_NAME=$(ls -tr $REPOSITORY/ | grep jar | tail -n 1)
+
+echo "> JAR Name: $JAR_NAME"
+nohup java -jar $REPOSITORY/$JAR_NAME 2>&1 &
+
+# nohup : 애플리케이션 실행자가 터미널을 종료해도 애플리케이션은 계속 구동
+```
+> deploy.sh 실행권한 추가 및 실행
+```
+chmod +x ./deploy.sh
+
+./deploy.sh
+
+> Git Pull
+이미 업데이트 상태입니다.
+> 프로젝트 Build 시작
+
+Deprecated Gradle features were used in this build, making it incompatible with Gradle 5.0.
+Use '--warning-mode all' to show the individual deprecation warnings.
+See https://docs.gradle.org/4.10.3/userguide/command_line_interface.html#sec:command_line_warnings
+
+BUILD SUCCESSFUL in 4s
+6 actionable tasks: 1 executed, 5 up-to-date
+> step1 디렉토리 이동
+> Build 파일 복사
+> 현재 구동중인 애플리케이션 pid 확인
+> 현재 구동중인 애플리케이션 pid : 
+> 현재 구동중인 애플리케이션이 없으므로 종료하지 않습니다.
+> 새 애플리케이션 배포
+> JAR Name: griffin-springboot2-webservice-1.0-SNAPSHOT.jar
+```
+
+> 외부 Security 파일 등록하기
+> - ClientId 와 ClientSecret 설정을 서버에 직접 가지고 있도록 설정
+```
+vim /home/ec2-user/app/application-oauth.properties
+
+# deploy 수정
+nohup java -jar \-Dspring.config.location=classpath:/application.properties,/home/ec2-user/app/application-oauth.properties \/$REPOSITORY/$JAR_NAME 2>&1 &
+
+```
