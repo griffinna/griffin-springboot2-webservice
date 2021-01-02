@@ -174,3 +174,34 @@ mysql> show databases;
 +-------------------------------+
 6 rows in set (0.00 sec)
 ```
+
+### EC2 서버에 프로젝트 배포
+#### 1. EC2 에 프로젝트 clone
+```
+# git 설치
+sudo yum install git
+git --version
+
+# 디렉토리 생성
+mkdir ~/app && mkdir ~/app/step1
+cd ~/app/step1
+
+# git clone
+git clone 프로젝트주소
+```
+
+- 테스트수행
+```
+./gradlew test
+```
+> 성공
+```
+BUILD SUCCESSFUL in 2m 26s
+5 actionable tasks: 5 executed
+```
+
+> 실패 : -bash: ./gradlew: Permission denied
+```
+# 실행 권한을 추가한 뒤 다시 테스트 진행
+chmod +x ./gradlew
+```
