@@ -340,3 +340,24 @@ spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
 ``` properties
 nohup java -jar \-Dspring.config.location=classpath:/application.properties,/home/ec2-user/app/application-oauth.properties,/home/ec2-user/app/application-real-db.properties,classpath:/application-real.properties \-Dspring.profiles.active=real \/$REPOSITORY/$JAR_NAME 2>&1 &
 ```
+
+#### 4. EC2 소셜로그인
+0. AWS 보안그룹 변경
+> EC2 보안그룹에 8080 포트가 열려있는지 확인
+1. Google 에 EC2 주소 등록
+> 구글웹콘솔 (https://console.cloud.google.com/home/dashboard)   
+> API 및 서비스 > 사용자인증정보
+- OAuth 동의 화면 > 승인된 도메인
+> http:// 없이 EC2 퍼블릭 DNS 등록
+- 사용자인증정보 > 서비스 선택
+> 퍼블릭 DNS 주소에 {퍼블릭}:8080/login/oauth2/code/google 승인된 리디렉션 URL 등록    
+2. Naver 에 EC2 주소 등록 
+> 네이버 개발자 센터 (https://developers.naver.com/apps/#/myapps)
+- 서비스 URL 
+> 로그인을 시도하는 서비스가 네이버에 등록된 서비스인지 판단하기 위한 항목
+> 8080 포트는 제외하고 실제 도메인 주소만 입력
+> 1개의 주소만 허용 (수정 후 localhost 사용불가)
+> 서비스 추가 후 새로운 키 발급받으면 localhost 추가 사용가능  
+- Callback URL
+> 전체주소 등록 
+> {EC2퍼블릭 DNS}:8080/login/oauth2/code/naver
