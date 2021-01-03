@@ -43,4 +43,9 @@ public class IndexController {
         return "posts-update";
     }
 
+    @GetMapping("/calendar")
+    public String calendar() {
+        return "calendar";
+    }
+
 }
