@@ -5,6 +5,7 @@ import com.griffin.springboot.domain.user.LoginUser;
 import com.griffin.springboot.service.posts.PostsService;
 import com.griffin.springboot.web.dto.PostsResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,7 +45,10 @@ public class IndexController {
     }
 
     @GetMapping("/calendar")
-    public String calendar() {
+    public String calendar(Model model, @LoginUser SessionUser user) {
+        if (user != null) {
+            model.addAttribute("userName", user.getName());
+        }
         return "calendar";
     }
 
