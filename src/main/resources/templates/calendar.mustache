@@ -1,5 +1,13 @@
 {{>layout/header }}
 <!-- 아래 영역은 bootstrap의 style이 적용되는 영역입니다. tui.calendar는 달력 상단 영역에 대해서는 가이드 하지 않고 있어서 개별 생성 해야 합니다. -->
+<div class="col-md-6">
+    <a href="/" role="button" class="btn btn-primary">HOME</a>
+    {{#userName}}
+        Logged in as : <span id="user">{{userName}}</span>
+        <a href="/logout" class="btn btn-info active" role="button">Logout</a>
+    {{/userName}}
+</div>
+
 <div class="code-html">
     <div id="menu">
       <span id="menu-navi">
@@ -11,11 +19,17 @@
           <i class="calendar-icon ic-arrow-line-right" data-action="move-next"></i>
         </button>
       </span>
-        <span id="renderRange" class="render-range">2021.01</span>
+        <span id="renderRange" class="render-range"></span>
     </div>
     <div id="calendar" style="height: 800px;"></div>
 </div>
 <!-- tui.calendar -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+<script src="https://uicdn.toast.com/tui.code-snippet/v1.5.2/tui-code-snippet.min.js"></script>
+<script src="https://uicdn.toast.com/tui.time-picker/v2.0.3/tui-time-picker.min.js"></script>
+<script src="https://uicdn.toast.com/tui.date-picker/v4.0.3/tui-date-picker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.20.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chance/1.0.13/chance.min.js"></script>
 {{! https://github.com/nhn/tui.calendar/issues/378 참고함, Jquery 미존재 버전 형태임,  }}
 <script type="text/javascript" src="https://uicdn.toast.com/tui.dom/v3.0.0/tui-dom.js"></script>
 <script type="text/javascript" src="https://uicdn.toast.com/tui.time-picker/latest/tui-time-picker.min.js"></script>

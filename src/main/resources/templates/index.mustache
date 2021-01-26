@@ -5,6 +5,7 @@
         <div class="row">
             <div class="col-md-6">
                 <a href="/posts/save" role="button" class="btn btn-primary">글 등록</a>
+                <a href="/calendar" role="button" class="btn btn-primary">달력</a>
                 {{#userName}}
                     Logged in as : <span id="user">{{userName}}</span>
                     <a href="/logout" class="btn btn-info active" role="button">Logout</a>
@@ -38,5 +39,4 @@
             </tbody>
         </table>
     </div>
-    {{>calendar}}
 {{>layout/footer}}
