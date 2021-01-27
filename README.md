@@ -361,3 +361,35 @@ nohup java -jar \-Dspring.config.location=classpath:/application.properties,/hom
 - Callback URL
 > 전체주소 등록 
 > {EC2퍼블릭 DNS}:8080/login/oauth2/code/naver
+
+### Travis CI 배포 자동화
+> https://travis-ci.org
+1. github계정으로 로그인 후 설정창에서 저장소 상태바 활성화
+2. 프로젝트 설정
+```
+language: java
+jdk:
+  - openjdk8
+
+branches:          
+  only:
+    - master
+
+# Travis CI 서버의 Home
+cache:
+  directories:
+    - '$HOME/.m2/repository'
+    - '$HOME/.gradle'
+script: "./gradlew clean build"
+
+# CI 실행 완료시 메일로 알람
+notifications:
+  email:
+    recipients:
+      - garam.dev9@gmail.com
+```
+
+- branches: 어느 브랜치가 푸시될 때 수행할지 지정
+- cache: 같은 의존성은 다음 배포때부터 다시 받지 않도록 설정
+- script: 브랜치에 푸시되었을 때 수행하는 명령어
+- notifications: Travis CI 실행 완료 시 자동으로 알람이 가도록 설정
