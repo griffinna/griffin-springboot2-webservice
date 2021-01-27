@@ -365,7 +365,8 @@ nohup java -jar \-Dspring.config.location=classpath:/application.properties,/hom
 ### Travis CI 배포 자동화
 > https://travis-ci.org
 1. github계정으로 로그인 후 설정창에서 저장소 상태바 활성화
-2. 프로젝트 설정
+2. 프로젝트 설정 
+- build.gradle 과 같은 위치에 .travis.yml 생성
 ```
 language: java
 jdk:
