@@ -367,7 +367,7 @@ nohup java -jar \-Dspring.config.location=classpath:/application.properties,/hom
 1. github계정으로 로그인 후 설정창에서 저장소 상태바 활성화
 2. 프로젝트 설정 
 - build.gradle 과 같은 위치에 .travis.yml 생성
-```
+```yaml
 language: java
 jdk:
   - openjdk8
@@ -394,3 +394,50 @@ notifications:
 - cache: 같은 의존성은 다음 배포때부터 다시 받지 않도록 설정
 - script: 브랜치에 푸시되었을 때 수행하는 명령어
 - notifications: Travis CI 실행 완료 시 자동으로 알람이 가도록 설정
+
+### Travis CI 와 AWS S3 연동하기
+- S3 : AWS 에서 제공하는 일종의 파일서버 (정적파일, 배포파일 관리 기능 제공)
+- Travis CI 연동시 구조
+> 1. Github Repository Push
+> 2. Travis CI > AWS S3 : jar 전달
+> 3. Travis CI > AWS CodeDeploy : 배포 요청
+> 4. AWS S3 > AWS CodeDeploy : jar 전달
+> 5. AWS CodeDeploy > AWS EC2 : 배포
+
+#### AWS Key 발급
+1. AWS Console 에서 IAM 검색하여 이동
+2. IAM 페이지 : 사용자 > 사용자 추가 버튼 
+3. 엑세스 유형 : 프로그래밍 방식 엑세스
+4. 권한(기존 정책 직접 연결) : AmazonS3FullAccess, AWSCodeDeployFullAccess
+5. 엑세스 키 ID, 비밀 엑세스 키 생성 완료
+
+#### Travis CI 에 Key 등록
+1. travis-ci.org 이동
+2. Setting > Environment Variables 등록
+> AWS_ACCESS_KEY : 엑세스 키 ID
+> AWS_SECRET_KEY : 비밀 엑세스 키
+
+#### S3 버킷 생성
+1. AWS > S3 이동 > 버킷 만들기
+2. 옵션
+> 퍼블릭 액세스 차단을 위한 버킷 설정 : 모든 퍼블릭 액세스 차단
+> (IAM 사용자로 발급받은 키를 사용하여 접근 가능)
+
+#### .travis.yml 추가
+```yaml
+before_deploy:
+  - zip -r griffin-springboot2-webservice *     # CodeDeploy 는 Jar 파일을 인식하지 못하므로 압축
+  - mkdir -p deploy
+  - mv griffin-springboot2-webservice.zip deploy/griffin-springboot2-webservice.zip
+
+deploy:                                   # 외부 서비스와 연동될 행위 선언 (S3로 파일 업로드 혹은 CodeDeploy 로 배포 등)
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY        # Travis repo setting 에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY    # Travis repo setting 에 설정된 값
+    bucket: griffin-springboot-build      # S3 버킷
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private                          # zip 파일 접근을 private 로
+    local_dir: deploy                     # before_deploy 에서 생성한 디렉토리 (해당위치의 파일들만 S3 전송)
+    wait-until-deploy: true
+```
