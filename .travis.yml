@@ -13,6 +13,22 @@ cache:
     - '$HOME/.gradle'
 script: "./gradlew clean build"
 
+before_deploy:
+  - zip -r griffin-springboot2-webservice *     # CodeDeploy 는 Jar 파일을 인식하지 못하므로 압축
+  - mkdir -p deploy
+  - mv griffin-springboot2-webservice.zip deploy/griffin-springboot2-webservice.zip
+
+deploy:                                   # 외부 서비스와 연동될 행위 선언 (S3로 파일 업로드 혹은 CodeDeploy 로 배포 등)
+  - provider: s3
+    access_key_id: $AWS_ACCESS_KEY        # Travis repo setting 에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY    # Travis repo setting 에 설정된 값
+    bucket: griffin-springboot-build      # S3 버킷
+    region: ap-northeast-2
+    skip_cleanup: true
+    acl: private                          # zip 파일 접근을 private 로
+    local_dir: deploy                     # before_deploy 에서 생성한 디렉토리 (해당위치의 파일들만 S3 전송)
+    wait-until-deploy: true
+
 # CI 실행 완료시 메일로 알람
 notifications:
   email:
