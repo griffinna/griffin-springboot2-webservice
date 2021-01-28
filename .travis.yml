@@ -24,10 +24,10 @@ deploy:                                   # 외부 서비스와 연동될 행위
     secret_access_key: $AWS_SECRET_KEY    # Travis repo setting 에 설정된 값
     bucket: griffin-springboot-build      # S3 버킷
     region: ap-northeast-2
-    cleanup: true
+    skip_cleanup: true
     acl: private                          # zip 파일 접근을 private 로
     local_dir: deploy                     # before_deploy 에서 생성한 디렉토리 (해당위치의 파일들만 S3 전송)
-#    wait-until-deployed: true
+    wait-until-deployed: true
 
 # CI 실행 완료시 메일로 알람
 notifications:
