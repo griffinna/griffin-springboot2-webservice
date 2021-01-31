@@ -446,9 +446,9 @@ deploy:                                   # 외부 서비스와 연동될 행위
 #### Travis CI 와 AWS S3, CodeDeploy 연동하기
 ##### EC2 가 CodeDeploy 를 연동 받을 수 있게 IAM 역할을 생성
 1. EC2에 IAM 역할 추가하기
-> 역할: AWS 서비스에만 할당할 수 있는 권한
->       (EC2, CodeDeploy, SQS 등)
-> 사용자: AWS 서비스 외에 사용할 수 있는 권한
+> 역할: AWS 서비스에만 할당할 수 있는 권한    
+>       (EC2, CodeDeploy, SQS 등)    
+> 사용자: AWS 서비스 외에 사용할 수 있는 권한   
 >       (로컬PC, IDC 서버 등)
 
 - AWS 서비스 > EC2 
