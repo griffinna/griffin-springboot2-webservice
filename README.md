@@ -499,7 +499,7 @@ The AWS CodeDeploy agent is running as PID 3436
 로드밸런서: off
 
 7. CodeDeploy 설정
-1. appspec.yml
+* appspec.yml
 ```yaml
 # AWS CodeDeploy 설정
 version: 0.0
@@ -510,7 +510,7 @@ files:
     overwrite: yes
 ```
 
-2. .travis.yml
+* .travis.yml
 ```yaml
 deploy:
   ...
