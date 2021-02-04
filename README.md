@@ -492,11 +492,11 @@ The AWS CodeDeploy agent is running as PID 3436
 1) 애플리케이션 생성
 > 컴퓨팅 플랫폼: EC2/온프레미스
 2) 배포그룹생성
-> 서비스역할: CodeDeploy용 IAM 선택
-> 배포유형: 현재위치 (배포할 서비스가 2대 이상이라면 블루/그린)
-> 환경구성: Amazon EC2 서비스
-> 배포설정: CodeDeployDefault.AllAtOnce (한번 배포할 때 몇 대의 서버에 배포할지를 결정)
-> 로드밸런서: off
+> 서비스역할: CodeDeploy용 IAM 선택  
+배포유형: 현재위치 (배포할 서비스가 2대 이상이라면 블루/그린)  
+환경구성: Amazon EC2 서비스  
+배포설정: CodeDeployDefault.AllAtOnce (한번 배포할 때 몇 대의 서버에 배포할지를 결정)  
+로드밸런서: off
 
 7. CodeDeploy 설정
 1. appspec.yml
@@ -527,6 +527,6 @@ deploy:
 ``` 
 
 8. 정상수행 확인
-> S3 버킷: zip 
-> CodeDeploy: 배포내역
-> EC2: /home/ec2-user/app/step2/zip 위치에 파일 확인
+> S3 버킷: zip  
+CodeDeploy: 배포내역  
+EC2: /home/ec2-user/app/step2/zip 위치에 파일 확인
