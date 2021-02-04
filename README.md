@@ -497,3 +497,36 @@ The AWS CodeDeploy agent is running as PID 3436
 > 환경구성: Amazon EC2 서비스
 > 배포설정: CodeDeployDefault.AllAtOnce (한번 배포할 때 몇 대의 서버에 배포할지를 결정)
 > 로드밸런서: off
+
+7. CodeDeploy 설정
+1. appspec.yml
+```yaml
+# AWS CodeDeploy 설정
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/ec2-user/app/step2/zip/
+    overwrite: yes
+```
+
+2. .travis.yml
+```yaml
+deploy:
+  ...
+  - provider: codedeploy
+    access_key_id: $AWS_ACCESS_KEY # Travis repo setting 에 설정된 값
+    secret_access_key: $AWS_SECRET_KEY    # Travis repo setting 에 설정된 값
+    bucket: griffin-springboot-build      # S3 버킷
+    key: griffin-springboot2-webservice.zip # 빌드 파일을 압축해서 전달
+    bundle_type: zip  # 압축 확장자
+    application: griffin-springboot2-webservice # 웹 콘솔에서 등록한 CodeDeploy 애플리케이션
+    deployment_group: griffin-springboot2-webservice-group  # CodeDeploy 배포 그룹
+    region: ap-northeast-2
+    wait-until-deployed: true
+``` 
+
+8. 정상수행 확인
+> S3 버킷: zip 
+> CodeDeploy: 배포내역
+> EC2: /home/ec2-user/app/step2/zip 위치에 파일 확인
