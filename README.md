@@ -483,3 +483,17 @@ $ sudo service codedeploy-agent status
 
 The AWS CodeDeploy agent is running as PID 3436
 ```
+
+5. CodeDeploy 를 위한 역할 생성
+- IAM > 역할 생성 > AWS 서비스 > CodeDeploy
+
+6. CodeDeploy 생성
+> AWS 의 배포 서비스
+1) 애플리케이션 생성
+> 컴퓨팅 플랫폼: EC2/온프레미스
+2) 배포그룹생성
+> 서비스역할: CodeDeploy용 IAM 선택
+> 배포유형: 현재위치 (배포할 서비스가 2대 이상이라면 블루/그린)
+> 환경구성: Amazon EC2 서비스
+> 배포설정: CodeDeployDefault.AllAtOnce (한번 배포할 때 몇 대의 서버에 배포할지를 결정)
+> 로드밸런서: off
