@@ -441,3 +441,45 @@ deploy:                                   # 외부 서비스와 연동될 행위
     local_dir: deploy                     # before_deploy 에서 생성한 디렉토리 (해당위치의 파일들만 S3 전송)
 #    wait-until-deployed: true
 ```
+
+
+#### Travis CI 와 AWS S3, CodeDeploy 연동하기
+##### EC2 가 CodeDeploy 를 연동 받을 수 있게 IAM 역할을 생성
+1. EC2에 IAM 역할 추가하기
+> 역할: AWS 서비스에만 할당할 수 있는 권한    
+>       (EC2, CodeDeploy, SQS 등)    
+> 사용자: AWS 서비스 외에 사용할 수 있는 권한   
+>       (로컬PC, IDC 서버 등)
+
+- AWS 서비스 > EC2 
+- 정책: AmazonEC2RoleforAWSCodeDeploy
+
+2. 생성한 역할을 EC2 서비스에 등록
+- 인스턴스 우클릭 > 보안 > IAM 역할 수정
+
+3. 역할 선택 완료 후 해당 EC2 인스턴스 재부팅
+
+4. CodeDeploy 에이전트 설치
+- EC2 에 접속 
+```
+$ aws s3 cp s3://aws-codedeploy-ap-northeast-2/latest/install . --region ap-northeast-2
+fatal error: An error occurred (403) when calling the HeadObject operation: Forbidden
+```
+```
+$ wget https://aws-codedeploy-ap-northeast-2.s3.amazonaws.com/latest/install
+```
+> install 파일 실행 권한 추가 
+```
+$ chmod +x ./install
+```
+> ruby 설치 후 install 파일로 설치 진행
+```
+sudo yum install ruby
+sudo ./install auto 
+```
+> Agent 정상 실행여부 확인
+```
+$ sudo service codedeploy-agent status
+
+The AWS CodeDeploy agent is running as PID 3436
+```
