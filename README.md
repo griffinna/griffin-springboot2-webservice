@@ -530,3 +530,5 @@ deploy:
 > S3 버킷: zip  
 CodeDeploy: 배포내역  
 EC2: /home/ec2-user/app/step2/zip 위치에 파일 확인
+
+# heroku 로 이전..예정.. https://griffin-springboot2-webservice.herokuapp.com
